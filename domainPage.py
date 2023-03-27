@@ -2,7 +2,6 @@ import flet as ft
 
 import domain
 
-
 class Var(ft.UserControl):
     def __init__(self, deleteVar, addVar, dictDomain, name="", mod = False, position = -1, listVar = []):
         super(Var, self).__init__()

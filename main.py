@@ -91,6 +91,10 @@ def main(page: ft.Page):
     file_pickerAdd = ft.FilePicker(on_result=OnAddResult)
 
     def onUseBase(e):
+        dictDomain={}
+        dictVar={}
+        dictRule={}
+        dictAnswer={}
         file_pickerLoad.pick_files(allow_multiple=False, allowed_extensions=["my_format"])
         page.go("/main")
 
@@ -139,7 +143,7 @@ def main(page: ft.Page):
                     "/var",
                     [
                         ft.AppBar(title=ft.Text("Переменные"), bgcolor=ft.colors.SURFACE_VARIANT),
-                        ft.Text("Перед переходом убедитесь что у вас нет не сохраненных полей", size=25),
+                        ft.Text("Перед переходом убедитесь что у вас нет не сохраненных полей. Что бы выбрать главную переменную нажминте на чекбокс.", size=25),
                         ft.Row(controls=[
                             ft.ElevatedButton("Правила", on_click=lambda _: page.go("/rule")),
                             ft.ElevatedButton("Домены", on_click=lambda _: page.go("/domain")),

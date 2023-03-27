@@ -3,11 +3,13 @@ import flet as ft
 import variable
 import domain
 
+
 class ContextDomain(ft.UserControl):
-    def __init__(self, dictDomain):
+    def __init__(self, dictDomain, update_domain):
         super(ContextDomain, self).__init__()
         self.dictDomain = dictDomain
         self.valueDomain = []
+        self.update_domain = update_domain
 
     def AddOnChange(self, e):
         self.dictDomain[self.Name.value] = domain.Domain(self.Name.value, list(self.valueDomain))
@@ -21,6 +23,7 @@ class ContextDomain(ft.UserControl):
         self.UpDomain.disabled = True
         self.DownDomain.disabled = True
         self.Add.disabled = True
+        self.update_domain()
         self.update()
 
     def AddValueInDomain(self, e):
@@ -216,6 +219,14 @@ class Var(ft.UserControl):
         self.Question.value = self.Name.value + "?"
         self.update()
 
+    def on_click_context_menu(self, e):
+        self.domain.visible = not self.domain.visible
+        self.context_menu.text = "Отобразить контекстное меню" if self.context_menu.text == "Скрыть контекстное меню" else "Скрыть контекстное меню"
+        self.update()
+
+    def update_domain(self):
+        self.Set.options = [ft.dropdown.Option(i) for i in self.dictDomain]
+        self.update()
 
     def build(self):
         self.LabelName = ft.Text("Имя перменной:")
@@ -254,8 +265,11 @@ class Var(ft.UserControl):
             value=self.dictVar[self.Name.value].Question if self.Name.value in self.dictVar else self.Name.value + "?",
         )
         self.Add = ft.ElevatedButton(text="Сохранить", disabled=True if self.Name.value == "" else False, on_click=self.AddOnChange)
-
-        return ft.Column(controls = [self.LabelName, self.Name, self.LabelType, self.Type, self.LabelSet, self.Set, self.LabelQuestion, self.Question, self.Add])
+        self.domain = ContextDomain(self.dictDomain, self.update_domain)
+        self.domain.visible=False
+        self.context_menu = ft.ElevatedButton(text="Отобразить контекстное меню", on_click=self.on_click_context_menu)
+        return ft.Column(controls = [ self.context_menu, self.domain,
+            self.LabelName, self.Name, self.LabelType, self.Type, self.LabelSet, self.Set, self.LabelQuestion, self.Question, self.Add])
 
 
 class Variab(ft.UserControl):
@@ -270,6 +284,7 @@ class Variab(ft.UserControl):
         self.dictRule = dictRule
         self.dictDomain = dictDomain
         self.listVar = listVar
+
 
     def DelOnClick(self, e):
         self.dictVar.pop(self.varName)
@@ -418,14 +433,8 @@ class ListVar(ft.UserControl):
         self.vars.controls=[Variab(i, self.varDelete, self.dictVar, self.add_clicked, self.dictVar[i].Main, self.reBuild, self.dictRule, self.dictDomain, self.listVar) for i in self.dictVar]
         self.update()
 
-    def on_click_context_menu(self, e):
-        self.domain.visible = not self.domain.visible
-        self.context_menu.text = "Отобразить контекстное меню" if self.context_menu.text == "Скрыть контекстное меню" else "Скрыть контекстное меню"
-        self.update()
-
     def build(self):
         self.newVar = ft.ElevatedButton(text="Создать", disabled=False, on_click=self.AddRule)
-        self.domain = ContextDomain(self.dictDomain)
-        self.context_menu = ft.ElevatedButton(text="Скрыть контекстное меню", on_click=self.on_click_context_menu)
+
         self.vars = ft.Column([Variab(i, self.varDelete, self.dictVar, self.add_clicked, self.dictVar[i].Main, self.reBuild, self.dictRule, self.dictDomain, self.listVar) for i in self.dictVar])
-        return ft.Column(controls=[self.newVar, self.context_menu, self.domain, self.vars,])
+        return ft.Column(controls=[self.newVar, self.vars,])

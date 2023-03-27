@@ -60,8 +60,9 @@ class mainPage(ft.UserControl):
                 var = self.dictVar[i]
                 break
 
+
         def F(var, depth):
-            if var.Main == True and len(stackVar) == 0 and var.value != None:
+            if var != None and var.value != None and var.Main == True and len(stackVar) == 0:
                 return
 
             if var.value == None and var.type != "Запрашиваемая":
@@ -95,8 +96,12 @@ class mainPage(ft.UserControl):
                 self.dictVar[var.name].value = self.dictAnswer["Answer"]
                 self.varValue.append((var.name, var.value))
                 self.event.clear()
-        F(var, 0)
-        self.printAnswer(var)
+        if var == None:
+            self.er()
+            print("A")
+        else:
+            F(var, 0)
+            self.printAnswer(var)
 
     def find1(self, arr, name):
         for x in arr:
@@ -135,6 +140,11 @@ class mainPage(ft.UserControl):
         valueText += obj["name"] + " " + expr + " Then " + self.dictRule[obj["name"]].outputVar + " = " + self.dictRule[
             obj["name"]].value + '\n'
         return valueText
+
+    def er(self):
+        self.text = ft.TextField(value="Ошибка, исправтье БЗ", width=1000, multiline=True, disabled=True, text_size=10)
+        self.column.controls = [self.text]
+        self.update()
 
     def printAnswer(self, val):
         self.text = ft.TextField(value="", width=1000, multiline=True, disabled=True, text_size=10)
